@@ -1,0 +1,9 @@
+# Core dependencies
+python-dotenv>=1.0.0
+cohere>=4.0.0
+astrapy>=1.0.0
+requests>=2.31.0
+
+# Optional dependencies for Jupyter notebook support
+jupyter>=1.0.0
+ipykernel>=6.0.0

@@ -1,213 +1,172 @@
-Below is a **clear, from-scratch Python learning path**, structured so you can move from zero to job-ready in a disciplined way.
+# Portfolio RAG Evaluation Tool
 
----
+A comprehensive RAG (Retrieval-Augmented Generation) testing and evaluation tool for portfolio applications. This tool tests the entire RAG pipeline including document retrieval from vector databases and answer generation using LLMs.
 
-## Phase 1: Foundations (Week 1–2)
+## Features
 
-### What Python is
+- Vector similarity search using Cohere embeddings
+- Document retrieval from AstraDB vector database
+- Answer generation using Groq API (Llama 3.3 70B)
+- Batch query testing with detailed performance metrics
+- Comprehensive reporting with JSON and readable text formats
+- Response time tracking and retrieval score analysis
 
-* High-level, interpreted language
-* Used for backend, DevOps, automation, data, AI
+## Prerequisites
 
-### Setup
+- Python 3.8+
+- AstraDB account and database
+- Cohere API key(s)
+- Groq API key(s)
 
-* Install Python 3.x
-* Use VS Code + Python extension
-* Learn:
+## Installation
 
-  * `python --version`
-  * `pip`
-  * `venv`
-
-### Core syntax
-
-* Variables, data types
-  `int`, `float`, `str`, `bool`
-* Input / output
-* Operators
-
-```python
-name = "Srikanth"
-age = 25
-print(f"My name is {name}, age {age}")
+1. Clone the repository with submodules:
+```bash
+git clone --recurse-submodules <your-repo-url>
+cd learn
 ```
 
----
-
-## Phase 2: Control Flow (Week 2)
-
-### Conditions
-
-```python
-if age >= 18:
-    print("Adult")
-else:
-    print("Minor")
+Or if you already cloned it:
+```bash
+git clone <your-repo-url>
+cd learn
+git submodule update --init --recursive
 ```
 
-### Loops
-
-* `for`
-* `while`
-* `break`, `continue`
-
-```python
-for i in range(5):
-    print(i)
+2. Create and activate a virtual environment:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
----
-
-## Phase 3: Data Structures (Week 3)
-
-### Must-know
-
-* List
-* Tuple
-* Set
-* Dictionary
-
-```python
-users = ["a", "b", "c"]
-config = {"host": "localhost", "port": 5432}
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
-### Operations
+4. Set up environment variables:
+   - Copy `.env.sample` to `.env`
+   - Fill in your actual API keys and credentials
 
-* Indexing
-* Slicing
-* Iteration
-* Comprehensions
-
-```python
-squares = [x*x for x in range(5)]
+```bash
+cp .env.sample .env
 ```
 
----
+## Configuration
 
-## Phase 4: Functions & Modules (Week 4)
+Edit the `.env` file with your credentials:
 
-### Functions
+- `ASTRA_DB_APPLICATION_TOKEN`: Your AstraDB application token
+- `ASTRA_DB_API_ENDPOINT`: Your AstraDB API endpoint URL
+- `ASTRA_DB_NAMESPACE`: Database keyspace (default: default_keyspace)
+- `COHERE_API_KEY_1`, `COHERE_API_KEY_2`: Cohere API keys for embeddings
+- `GROQ_API_KEY_1`, `GROQ_API_KEY_2`: Groq API keys for LLM generation
+- `NEON_DATABASE_URL`: PostgreSQL connection string (if using Neon)
 
-```python
-def add(a, b):
-    return a + b
+## Usage
+
+1. The test queries are located in the submodule (`portfolio-data/portfolio_evaluation_queries.json`). You can edit this file to add or modify test queries:
+```json
+[
+  {
+    "query": "What are Srikanth's key skills?"
+  },
+  {
+    "query": "Tell me about Srikanth's work experience"
+  }
+]
 ```
 
-### Concepts
-
-* Arguments
-* Return values
-* Default args
-* `*args`, `**kwargs`
-
-### Modules
-
-* `import`
-* Standard library (`os`, `sys`, `datetime`, `json`)
-
----
-
-## Phase 5: Error Handling & Files (Week 5)
-
-### Exceptions
-
-```python
-try:
-    x = int("abc")
-except ValueError:
-    print("Invalid number")
+2. Run the evaluation:
+```bash
+python rag-eval-data.py
 ```
 
-### File handling
+3. Check results in the `rag_results/` directory:
+   - `evaluation_results_<timestamp>.json`: Detailed JSON results
+   - `readable_report_<timestamp>.txt`: Human-readable report
 
-* Read/write files
-* JSON, CSV
+## Project Structure
 
----
-
-## Phase 6: OOP in Python (Week 6)
-
-### Classes & Objects
-
-```python
-class User:
-    def __init__(self, name):
-        self.name = name
+```
+.
+├── rag-eval-data.py              # Main RAG testing script
+├── portfolio-data/               # Git submodule with portfolio data
+│   ├── ai-portfolio.json         # Portfolio knowledge base
+│   └── portfolio_evaluation_queries.json  # Test queries
+├── rag_results/                  # Generated test results
+├── index.ipynb                   # Jupyter notebook (if applicable)
+├── .env                          # Environment variables (not in git)
+├── .env.sample                   # Sample environment file
+├── requirements.txt              # Python dependencies
+├── .gitignore                    # Git ignore rules
+├── .gitmodules                   # Git submodule configuration
+└── README.md                     # This file
 ```
 
-### Concepts
+## Submodule Information
 
-* Inheritance
-* Encapsulation
-* Magic methods (`__str__`, `__repr__`)
+This project uses a git submodule for the portfolio data:
+- **Repository**: https://github.com/srikanth-karthi/portfolio-data
+- **Contains**:
+  - `ai-portfolio.json` - the knowledge base for the portfolio
+  - `portfolio_evaluation_queries.json` - test queries for evaluation
 
----
+To update the submodule to the latest version:
+```bash
+git submodule update --remote portfolio-data
+```
 
-## Phase 7: Python for Backend & DevOps (Very Important for You)
+## How It Works
 
-### Backend
+1. **Initialization**: Connects to AstraDB vector database and initializes Cohere/Groq clients
+2. **Query Processing**: For each query:
+   - Generates query embedding using Cohere
+   - Retrieves top-k similar documents from AstraDB
+   - Generates answer using Groq LLM with retrieved context
+3. **Evaluation**: Tracks response times, retrieval scores, and success rates
+4. **Reporting**: Generates detailed reports in JSON and text formats
 
-* Flask / FastAPI
-* REST APIs
-* JWT auth
-* Database (PostgreSQL, MongoDB)
+## Output Metrics
 
-### DevOps / Automation
+The tool tracks and reports:
+- Total queries tested
+- Success/failure rates
+- Average response time
+- Average retrieval scores
+- Individual query results with full context
+- Error details for failed queries
 
-* Scripts for:
+## Example Output
 
-  * File cleanup
-  * Log parsing
-  * Cron jobs
-* Libraries:
+```
+OVERALL STATISTICS
+--------------------------------------------------------------------------------
+  Total Queries:        10
+  Successful:           10
+  Failed:               0
+  Success Rate:         100.0%
+  Avg Response Time:    1.234s
+  Avg Top Retrieval:    0.856
+```
 
-  * `subprocess`
-  * `boto3`
-  * `requests`
+## Troubleshooting
 
----
+- **Connection errors**: Verify your API keys and endpoints in `.env`
+- **Rate limits**: The tool includes built-in delays and key rotation
+- **Empty results**: Check that your vector database collection is populated
+- **Module not found**: Ensure all dependencies are installed with `pip install -r requirements.txt`
 
-## Phase 8: Advanced Python (Week 8+)
+## Security Notes
 
-* Virtual environments
-* Dependency management
-* Async (`async`, `await`)
-* Type hints
-* Testing (`pytest`)
-* Packaging
+- Never commit the `.env` file to version control
+- Keep your API keys secure and rotate them regularly
+- Use environment variables for all sensitive data
 
----
+## License
 
-## Practice Strategy (Critical)
+[Add your license here]
 
-* Write code **daily**
-* Build small utilities:
+## Contact
 
-  * Backup script
-  * Log analyzer
-  * API health checker
-* Read others’ code
-* Debug intentionally
-
----
-
-## Recommended Order (Strict)
-
-1. Syntax
-2. Data structures
-3. Functions
-4. Error handling
-5. OOP
-6. Backend OR Automation
-7. Advanced concepts
-
----
-
-If you want, next I can:
-
-* Create a **30-day Python plan**
-* Teach Python **from DevOps perspective**
-* Give **daily practice problems**
-* Start with **Day 1 lesson now**
-# Rag-Evaluation
+[Add your contact information here]
