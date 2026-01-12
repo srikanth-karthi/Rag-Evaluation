@@ -163,10 +163,3 @@ OVERALL STATISTICS
 - Keep your API keys secure and rotate them regularly
 - Use environment variables for all sensitive data
 
-## License
-
-[Add your license here]
-
-## Contact
-
-[Add your contact information here]
